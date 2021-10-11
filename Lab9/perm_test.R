@@ -1,6 +1,8 @@
+set.seed(96000464)
+
 # ----  Creating our samples ------ #
-nx <- 100
-ny <- 100
+nx <- 4
+ny <- 4
 x <- rnorm(n = nx, mean = 0, sd = 1)
 y <- rnorm(n = ny, mean = 1.5, sd = 2)
 
@@ -9,10 +11,10 @@ y <- rnorm(n = ny, mean = 1.5, sd = 2)
 
 # Let the null hypo H0 = E(x) >= E(Y), under level of sig 0.05
 alpha <- 0.05
-t_test <- t.test(alternative = "greater", x = x, y = y)
+t_test <- t.test(alternative = "less", x = x, y = y)
 # A note on t_test,
-t_test$p.value > alpha # True if we accept the null hypothesis
-
+t_test$p.value < alpha # If true, we accept the null hypothesis
+# Depends on what we set the seeds as....
 
 # 2. Performing a permutation test
 
@@ -20,13 +22,9 @@ t_test$p.value > alpha # True if we accept the null hypothesis
 # We suppose this null hypothesis bc this means that we can mix X and Y
 # Together
 
-# Function to compute t value for each permutation
-t_value <- function(x, y) {
-    return((mean(y) - mean(x)) / (sqrt(var(x) / nx + var(y) / ny)))
-}
 
 # Base-line t value
-base_t_stat <- t_value(x, y)
+base_t_stat <- t.test(x, y, alternative = "less")$statistic
 
 # How many permuation trials we are going to do
 n <- 1000
