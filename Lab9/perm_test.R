@@ -6,7 +6,6 @@ ny <- 4
 x <- rnorm(n = nx, mean = 0, sd = 1)
 y <- rnorm(n = ny, mean = 1.5, sd = 2)
 
-
 # 1. Performing a one sided test, if E(X) < E(Y)
 
 # Let the null hypo H0 = E(x) >= E(Y), under level of sig 0.05
@@ -14,7 +13,7 @@ alpha <- 0.05
 t_test <- t.test(alternative = "less", x = x, y = y)
 # A note on t_test,
 t_test$p.value < alpha # If true, we accept the null hypothesis
-# Depends on what we set the seeds as....
+# Depends on what we set the seed as....
 
 # 2. Performing a permutation test
 
@@ -43,17 +42,21 @@ for (i in 1:n) {
     xy_shuffle <- sample(xy)
     x_temp <- xy_shuffle[include]
     y_temp <- xy_shuffle[!include]
-    t_stat_vals[i] <- t_value(x_temp, y_temp)
+    t_stat_vals[i] <- t.test(x_temp, y_temp, alternative= "less")$statistic
 }
 
 # Get the p value, ie at what percentage does
 # the base-line p value sit at for other vals?
-p_value <- sum(t_stat_vals > base_t_stat) / ns
+p_value <- mean(t_stat_vals > base_t_stat)
+
 # P value is is < 0.05, reject null hypothesis
 
 hist(t_stat_vals, breaks = 30, freq = FALSE)
-base_t_stat
 
+# Plotting the student t density on top!
+x_vals = seq(-5, 5, length = 100)
+t_density = dt(x = x_vals, df = t_test$parameter)
+lines(x_vals, t_density, col = "red")
 # We can accept the null hypothesis, that E(X) < E(Y)
 
 # 3. Comparing sampling distributions
